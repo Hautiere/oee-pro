@@ -48,6 +48,15 @@ def require_roles(*roles: UserRole):
     return _check
 
 
+# ── Rôles spécifiques ──────────────────────────────────────────────────────────
+
+CurrentUser = Annotated[User, Depends(get_current_user)]
+MaintenanceOrAbove = Annotated[User, Depends(require_roles(UserRole.maintenance, UserRole.supervisor, UserRole.admin))]
+OperatorOrAbove = Annotated[User, Depends(require_roles(UserRole.operator, UserRole.maintenance, UserRole.supervisor, UserRole.admin))]
+SupervisorOrAbove = Annotated[User, Depends(require_roles(UserRole.supervisor, UserRole.admin))]
+AdminRequired = Annotated[User, Depends(require_roles(UserRole.admin))]
+
+
 # Alias pratiques utilisables directement dans les signatures de routes
 CurrentUser        = Annotated[User, Depends(get_current_user)]
 AdminOnly          = Annotated[User, Depends(require_roles(UserRole.admin))]

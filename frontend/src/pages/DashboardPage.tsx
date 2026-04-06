@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { authApi } from '../api/auth'
@@ -81,6 +81,26 @@ export default function DashboardPage() {
               </span>
             </>
           )}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => navigate('/')} style={{
+              background: 'none', border: '1px solid #2a3f5f', borderRadius: 5,
+              color: '#6b82a0', padding: '4px 10px', fontSize: 11, cursor: 'pointer',
+            }}>
+              Dashboard
+            </button>
+            <button onClick={() => navigate('/assets')} style={{
+              background: 'none', border: '1px solid #2a3f5f', borderRadius: 5,
+              color: '#6b82a0', padding: '4px 10px', fontSize: 11, cursor: 'pointer',
+            }}>
+              Actifs
+            </button>
+            <button onClick={() => navigate('/import')} style={{
+              background: 'none', border: '1px solid #2a3f5f', borderRadius: 5,
+              color: '#6b82a0', padding: '4px 10px', fontSize: 11, cursor: 'pointer',
+            }}>
+              Import
+            </button>
+          </div>
           <button onClick={handleLogout} style={{
             background: 'none', border: '1px solid #2a3f5f', borderRadius: 5,
             color: '#6b82a0', padding: '4px 10px', fontSize: 11, cursor: 'pointer',

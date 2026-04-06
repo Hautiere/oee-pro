@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.db.session import engine
-from app.routers import auth, health, referentiel, events
+from app.routers import auth, health, referentiel, events, imports
 
 settings = get_settings()
 
@@ -37,6 +37,7 @@ app.include_router(health.router)
 app.include_router(auth.router,        prefix="/api/v1")
 app.include_router(referentiel.router, prefix="/api/v1")
 app.include_router(events.router,      prefix="/api/v1")
+app.include_router(imports.router,     prefix="/api/v1")
 
 # Phase 4
 # app.include_router(oee.router, prefix="/api/v1")

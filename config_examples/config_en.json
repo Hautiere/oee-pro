@@ -1,0 +1,147 @@
+{
+  "version": "1.0",
+  "language": "en",
+  "company": "My Company",
+  "sites": [
+    {
+      "name": "Lyon Plant",
+      "location": "Confluence",
+      "buildings": [
+        {
+          "name": "Production Workshop",
+          "workshops": [
+            {
+              "name": "CNC Line",
+              "machines": [
+                {
+                  "name": "Fanuc 300i CNC Lathe",
+                  "type": "CNC Lathe",
+                  "status": "running",
+                  "description": "High precision CNC lathe"
+                },
+                {
+                  "name": "5-Axis DMG UGV Center",
+                  "type": "Machining Center",
+                  "status": "idle",
+                  "description": "5-axis machining center"
+                },
+                {
+                  "name": "Maho 700 Milling Machine",
+                  "type": "Milling Machine",
+                  "status": "running",
+                  "description": "Conventional milling machine"
+                }
+              ]
+            },
+            {
+              "name": "Assembly Line",
+              "machines": [
+                {
+                  "name": "ABB IRB 2600 Welding Robot",
+                  "type": "Welding Robot",
+                  "status": "running",
+                  "description": "Welding robot"
+                },
+                {
+                  "name": "Juki SMT Assembly Line",
+                  "type": "Assembly Line",
+                  "status": "running",
+                  "description": "SMT assembly line"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Maintenance Workshop",
+          "workshops": [
+            {
+              "name": "Special Equipment",
+              "machines": [
+                {
+                  "name": "200T Hydraulic Press",
+                  "type": "Hydraulic Press",
+                  "status": "maint",
+                  "description": "200-ton hydraulic press"
+                },
+                {
+                  "name": "Knapp Automated Conveyor",
+                  "type": "Conveyor",
+                  "status": "running",
+                  "description": "Automated conveyor system"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Grenoble Plant",
+      "location": "Alpexpo",
+      "buildings": [
+        {
+          "name": "Electronics Workshop",
+          "workshops": [
+            {
+              "name": "Inspection Line",
+              "machines": [
+                {
+                  "name": "Cognex AOI IS7402",
+                  "type": "Vision Inspection",
+                  "status": "running",
+                  "description": "Optical inspection system"
+                },
+                {
+                  "name": "Heller Reflow Oven",
+                  "type": "Industrial Oven",
+                  "status": "idle",
+                  "description": "Reflow oven"
+                }
+              ]
+            },
+            {
+              "name": "Molding Line",
+              "machines": [
+                {
+                  "name": "Arburg 720S Injection Molder",
+                  "type": "Injection Molder",
+                  "status": "running",
+                  "description": "Plastic injection molding machine"
+                },
+                {
+                  "name": "KraussMaffei 150T Injection Molder",
+                  "type": "Injection Molder",
+                  "status": "down",
+                  "description": "150-ton injection molding machine"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bordeaux Plant",
+      "location": "Mérignac",
+      "buildings": [
+        {
+          "name": "Laser Workshop",
+          "workshops": [
+            {
+              "name": "Cutting Line",
+              "machines": [
+                {
+                  "name": "Trumpf 5000 CO₂ Laser Cutter",
+                  "type": "Laser Cutter",
+                  "status": "running",
+                  "description": "CO₂ laser cutting machine"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

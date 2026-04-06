@@ -1,0 +1,419 @@
+{
+  "version": "1.0",
+  "language": "fr",
+  "company": "Mon Entreprise",
+  "sites": [
+    {
+      "name": "Usine Lyon",
+      "location": "Confluence",
+      "buildings": [
+        {
+          "name": "Atelier Production",
+          "workshops": [
+            {
+              "name": "Ligne CNC",
+              "machines": [
+                {
+                  "name": "CNC Fanuc 300i",
+                  "type": "CNC Lathe",
+                  "status": "running",
+                  "description": "Tour CNC haute précision"
+                },
+                {
+                  "name": "5-Axis DMG UGV",
+                  "type": "Machining Center",
+                  "status": "idle",
+                  "description": "Centre d'usinage 5 axes"
+                },
+                {
+                  "name": "Maho 700 Mill",
+                  "type": "Milling Machine",
+                  "status": "running",
+                  "description": "Fraiseuse conventionnelle"
+                }
+              ]
+            },
+            {
+              "name": "Ligne Assemblage",
+              "machines": [
+                {
+                  "name": "ABB IRB 2600 Robot",
+                  "type": "Welding Robot",
+                  "status": "running",
+                  "description": "Robot de soudage"
+                },
+                {
+                  "name": "Juki SMT Line",
+                  "type": "Assembly Line",
+                  "status": "running",
+                  "description": "Ligne de montage SMT"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Atelier Maintenance",
+          "workshops": [
+            {
+              "name": "Équipements Spéciaux",
+              "machines": [
+                {
+                  "name": "200T Hydraulic Press",
+                  "type": "Hydraulic Press",
+                  "status": "maint",
+                  "description": "Presse hydraulique 200 tonnes"
+                },
+                {
+                  "name": "Knapp Conveyor",
+                  "type": "Conveyor",
+                  "status": "running",
+                  "description": "Convoyeur automatisé"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Usine Grenoble",
+      "location": "Alpexpo",
+      "buildings": [
+        {
+          "name": "Atelier Électronique",
+          "workshops": [
+            {
+              "name": "Ligne Inspection",
+              "machines": [
+                {
+                  "name": "Cognex AOI IS7402",
+                  "type": "Vision Inspection",
+                  "status": "running",
+                  "description": "Système d'inspection optique"
+                },
+                {
+                  "name": "Heller Reflow Oven",
+                  "type": "Industrial Oven",
+                  "status": "idle",
+                  "description": "Four de refusion"
+                }
+              ]
+            },
+            {
+              "name": "Ligne Moulage",
+              "machines": [
+                {
+                  "name": "Arburg 720S",
+                  "type": "Injection Molder",
+                  "status": "running",
+                  "description": "Machine d'injection plastique"
+                },
+                {
+                  "name": "KraussMaffei 150T",
+                  "type": "Injection Molder",
+                  "status": "down",
+                  "description": "Machine d'injection 150 tonnes"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Usine Bordeaux",
+      "location": "Mérignac",
+      "buildings": [
+        {
+          "name": "Atelier Laser",
+          "workshops": [
+            {
+              "name": "Ligne Découpe",
+              "machines": [
+                {
+                  "name": "Trumpf 5000 CO₂ Laser",
+                  "type": "Laser Cutter",
+                  "status": "running",
+                  "description": "Découpeur laser CO₂"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+# Dépendances
+pip install -r requirements.txt
+
+# Migrations de base de données
+alembic upgrade head
+
+# Démarrage
+uvicorn app.main:app --reload --port 8000
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+# → http://localhost:5173
+```
+
+---
+
+## 2. Configuration de l'application
+
+### Structure de configuration
+
+L'application démarre vierge. Vous devez charger une configuration d'usine via un fichier JSON.
+
+#### Exemple de fichier de configuration française (`config_fr.json`)
+
+```json
+{
+  "version": "1.0",
+  "language": "fr",
+  "company": "Mon Entreprise",
+  "sites": [
+    {
+      "name": "Usine Lyon",
+      "location": "Confluence",
+      "buildings": [
+        {
+          "name": "Atelier Production",
+          "workshops": [
+            {
+              "name": "Ligne CNC",
+              "machines": [
+                {
+                  "name": "CNC Fanuc 300i",
+                  "type": "CNC Lathe",
+                  "status": "running",
+                  "description": "Tour CNC haute précision"
+                },
+                {
+                  "name": "5-Axis DMG UGV",
+                  "type": "Machining Center",
+                  "status": "idle",
+                  "description": "Centre d'usinage 5 axes"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Exemple de fichier de configuration anglaise (`config_en.json`)
+
+```json
+{
+  "version": "1.0",
+  "language": "en",
+  "company": "My Company",
+  "sites": [
+    {
+      "name": "Lyon Plant",
+      "location": "Confluence",
+      "buildings": [
+        {
+          "name": "Production Workshop",
+          "workshops": [
+            {
+              "name": "CNC Line",
+              "machines": [
+                {
+                  "name": "Fanuc 300i CNC Lathe",
+                  "type": "CNC Lathe",
+                  "status": "running",
+                  "description": "High precision CNC lathe"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Chargement de la configuration
+
+1. **Via l'interface web** :
+   - Aller sur http://localhost:5173
+   - Se connecter avec un compte admin (admin@oee.local / Admin1234!)
+   - Aller dans "Configuration" → "Importer configuration"
+   - Sélectionner votre fichier `config_fr.json` ou `config_en.json`
+   - Cliquer sur "Importer"
+
+2. **Via l'API** :
+```bash
+curl -X POST "http://localhost:8000/api/v1/config/import" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@config_fr.json"
+```
+
+---
+
+## 3. Chargement des données historiques
+
+### Format des données
+
+Les données sont chargées depuis des fichiers JSON générés par le simulateur ou exportés depuis vos systèmes SCADA/PLC.
+
+#### Exemple de fichier de données (`data_2024-01-01_2024-01-31.json`)
+
+```json
+{
+  "version": "1.0",
+  "period_start": "2024-01-01T00:00:00Z",
+  "period_end": "2024-01-31T23:59:59Z",
+  "machines": [
+    {
+      "machine_name": "CNC Fanuc 300i",
+      "events": [
+        {
+          "event_type": "running",
+          "started_at": "2024-01-01T08:00:00Z",
+          "ended_at": "2024-01-01T12:00:00Z",
+          "quality_pct": 95
+        },
+        {
+          "event_type": "idle",
+          "started_at": "2024-01-01T12:00:00Z",
+          "ended_at": "2024-01-01T12:30:00Z"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Chargement des données
+
+1. **Via l'interface web** :
+   - Aller dans "Données" → "Importer historique"
+   - Sélectionner vos fichiers de données
+   - Cliquer sur "Importer"
+
+2. **Via l'API** :
+```bash
+curl -X POST "http://localhost:8000/api/v1/data/import" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@data_2024-01.json"
+```
+
+3. **Chargement automatique** :
+   - Placer les fichiers dans le dossier `data/incoming/`
+   - L'application les détecte automatiquement et les importe
+
+---
+
+## 4. Utilisation quotidienne
+
+### Connexion
+
+- URL : http://localhost:5173
+- Comptes par défaut :
+  - Admin : admin@oee.local / Admin1234!
+  - Superviseur : superviseur@oee.local / Super1234!
+  - Maintenance : maintenance@oee.local / Maint1234!
+
+### Navigation
+
+1. **Dashboard** : Vue d'ensemble des performances OEE
+2. **Actifs** : Arbre des machines avec détails
+3. **Configuration** : Gestion des paramètres
+4. **Données** : Import/export des données
+
+### Calcul OEE
+
+L'OEE est calculé automatiquement selon la formule :
+```
+OEE = Disponibilité × Performance × Qualité
+```
+
+- **Disponibilité** : Temps de fonctionnement / Temps total
+- **Performance** : Production réelle / Production théorique
+- **Qualité** : Pièces bonnes / Pièces totales
+
+---
+
+## 5. Simulation de données
+
+Pour tester l'application avec des données réalistes :
+
+```bash
+# Génération et chargement automatique (recommandé)
+./start_simulator.sh
+
+# Génération manuelle de 30 jours
+./start_simulator.sh --days 30
+
+# Génération sans vérifications
+./start_simulator.sh --skip-checks
+```
+
+Les données sont générées dans `simulator/data/` puis automatiquement importées.
+
+---
+
+## 6. Maintenance et dépannage
+
+### Redémarrage complet
+
+```bash
+# Arrêt de tout
+docker compose down -v
+./start_backend.sh &
+./start_frontend.sh &
+```
+
+### Logs
+
+- Backend : `backend/app.log`
+- Frontend : Console du navigateur
+- Base de données : `docker compose logs db`
+
+### Problèmes courants
+
+1. **Port déjà utilisé** : `lsof -i :8000` puis `kill -9 <PID>`
+2. **Base de données corrompue** : `docker compose down -v && docker compose up -d db`
+3. **Dépendances manquantes** : `cd backend && source .venv/bin/activate && pip install -r requirements.txt`
+
+---
+
+## 7. Personnalisation
+
+### Ajout de nouvelles machines
+
+Modifier votre fichier de configuration JSON et le recharger.
+
+### Nouveaux types d'événements
+
+Étendre le schéma dans `backend/app/schemas/events.py`.
+
+### Intégrations
+
+- **MQTT** : Pour recevoir des données temps réel des machines
+- **SCADA** : Export automatique vers vos systèmes existants
+- **API REST** : Intégration avec d'autres applications
+
+---
+
+## Support
+
+- Documentation complète : `README.md`
+- API documentation : http://localhost:8000/docs
+- Issues GitHub : https://github.com/Hautiere/oee-pro/issues</content>
+<parameter name="filePath">/Users/gr4dl0nys29/projets/OEE/oee-pro/TUTORIAL.md
