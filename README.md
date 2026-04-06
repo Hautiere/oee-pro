@@ -25,6 +25,7 @@ Monorepo fullstack : React + TypeScript / FastAPI / PostgreSQL / Docker.
 oee-pro/
 ├── start_backend.sh          # Lance PostgreSQL + backend
 ├── start_frontend.sh         # Lance le frontend
+├── start_simulator.sh        # Lance le simulateur avec vérifications
 ├── docker-compose.yml        # PostgreSQL uniquement (profil "full" pour tout Docker)
 ├── .env.example
 │
@@ -39,50 +40,46 @@ oee-pro/
 │   │   ├── models/
 │   │   │   ├── __init__.py       # Re-export de tous les modèles (requis par Alembic)
 │   │   │   ├── user.py           # User, UserRole enum
-│   │   │   ├── referentiel.py    # Site, Building, Workshop, Machine, MachineStatus enum
-│   │   │   └── events.py         # MachineEvent, Intervention, PlannedMaintenance
+│   │   │   ├── referentiel.py    # Site, Building, Machine, MachineStatus enum
+│   │   │   └── events.py         # MachineEvent, EventType, MaintType enums
 │   │   ├── schemas/
-│   │   │   ├── user.py           # UserCreate, UserOut, Token
-│   │   │   ├── referentiel.py    # SiteOut, BuildingOut, WorkshopOut, MachineOut, MachineUpdate
-│   │   │   └── events.py         # MachineEventCreate/Out, InterventionCreate/Out,
-│   │   │                         # PlannedMaintenanceCreate/Out, TimelineResponse
+│   │   │   ├── user.py           # UserCreate, UserOut, LoginRequest, TokenOut
+│   │   │   ├── referentiel.py    # SiteOut, BuildingOut, MachineOut, MachineUpdate
+│   │   │   └── events.py         # MachineEventCreate/Out, TimelineResponse
 │   │   ├── services/
-│   │   │   ├── auth_service.py       # login, register, get_current_user
-│   │   │   ├── referentiel_service.py# CRUD sites/buildings/workshops/machines
-│   │   │   └── events_service.py     # CRUD events, interventions, planned_maintenance
-│   │   │                             # + get_timeline (agrégation pour le frontend)
+│   │   │   ├── auth_service.py       # authenticate_user, register_user
+│   │   │   ├── referentiel_service.py# CRUD sites/buildings/machines
+│   │   │   └── events_service.py     # CRUD events + get_timeline
 │   │   ├── routers/
 │   │   │   ├── auth.py           # POST /login, /register, GET /me
 │   │   │   ├── health.py         # GET /health, /health/db
-│   │   │   ├── referentiel.py    # CRUD sites/buildings/workshops/machines
+│   │   │   ├── referentiel.py    # CRUD sites/buildings/machines
 │   │   │   │                     # + GET /sites/tree, GET /machines
 │   │   │   └── events.py         # GET+POST /machines/{id}/events
 │   │   │                         # GET /machines/{id}/timeline
-│   │   │                         # POST /events/{id}/interventions
-│   │   │                         # GET+POST /machines/{id}/planned-maintenance
 │   │   └── main.py               # App FastAPI, CORS, inclusion des routers
 │   ├── alembic/
 │   │   ├── env.py                # Config async Alembic
 │   │   └── versions/
 │   │       ├── 0001_init_users.py     # Table users + enum user_role
-│   │       ├── 0002_referentiel.py    # Tables sites/buildings/workshops/machines
-│   │       └── 0003_events.py        # Tables machine_events/interventions/planned_maintenance
+│   │       ├── 0002_referentiel.py    # Tables sites/buildings/machines
+│   │       └── 0003_events.py         # Table machine_events
 │   ├── scripts/
-│   │   ├── seed.py               # 4 utilisateurs de démo
-│   │   ├── seed_referentiel.py   # 3 sites, 4 bâtiments, 6 ateliers, 12 machines
-│   │   └── seed_events.py        # ~14 jours d'événements par machine
+│   │   ├── seed.py               # Utilisateurs de démo
+│   │   ├── seed_referentiel.py   # Sites, bâtiments, machines
+│   │   └── seed_events.py        # Événements de démo
 │   └── requirements.txt
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── api/
-│   │   │   ├── client.ts         # Axios instance, intercepteur JWT, refresh
+│   │   │   ├── client.ts         # Axios instance, intercepteur JWT
 │   │   │   ├── auth.ts           # login(), getMe()
 │   │   │   ├── referentiel.ts    # getSitesTree(), getAllMachines(), updateMachine()
-│   │   │   └── events.ts         # getTimeline(), createEvent(), createPlanned()
+│   │   │   └── events.ts         # getTimeline(), createEvent()
 │   │   ├── hooks/
 │   │   │   └── useReferentiel.ts # useSitesTree, useAllMachines, useUpdateMachine,
-│   │   │                         # useTimeline, useCreateEvent, useCreatePlanned
+│   │   │                         # useTimeline, useCreateEvent
 │   │   ├── lib/
 │   │   │   └── oee.ts            # calcWeeklyOEE(), STATUS_CONFIG, EVENT_CONFIG,
 │   │   │                         # oeeColor(), pct(), fmtDur()
@@ -90,12 +87,15 @@ oee-pro/
 │   │   │   └── authStore.ts      # Zustand : user, token, login(), logout()
 │   │   ├── components/
 │   │   │   ├── PrivateRoute.tsx  # Garde de route JWT
-│   │   │   ├── Timeline.tsx      # SVG timeline barres colorées (events + planned)
+│   │   │   ├── Timeline.tsx      # SVG timeline barres colorées
 │   │   │   ├── Donut.tsx         # SVG donut OEE (slices A/P/Q)
-│   │   │   └── BarChartOEE.tsx   # SVG bar chart historique hebdomadaire
+│   │   │   ├── BarChartOEE.tsx   # SVG bar chart historique hebdomadaire
+│   │   │   ├── DateRangePicker.tsx # Sélecteur de période
+│   │   │   └── MaintPanel.tsx    # Panel maintenance
 │   │   ├── pages/
 │   │   │   ├── LoginPage.tsx     # Page de connexion
-│   │   │   └── AssetsPage.tsx    # Page principale : arbre + fiche machine (4 onglets)
+│   │   │   ├── AssetsPage.tsx    # Page actifs (arbre machines)
+│   │   │   └── DashboardPage.tsx # Dashboard OEE
 │   │   └── App.tsx               # Router React, QueryClientProvider
 │   ├── vite.config.ts            # Proxy /api → localhost:8000
 │   └── package.json
@@ -103,7 +103,7 @@ oee-pro/
 └── simulator/
     ├── machine_simulator.py      # Génère événements réalistes → JSON
     ├── api_connector.py          # JSON → POST /machines/{id}/events
-    ├── README.md
+    ├── simulator_README.md       # Documentation simulateur
     └── data/                     # Fichiers JSON générés
 ```
 
@@ -130,7 +130,12 @@ cp .env.example backend/.env
 ### 2. Démarrer PostgreSQL
 
 ```bash
-docker compose up -d postgres
+# Option 1 : PostgreSQL uniquement (recommandé pour développement)
+docker compose up -d db
+
+# Option 2 : Tout en Docker (backend + frontend + DB)
+docker compose --profile full up -d
+
 # Vérifier : docker compose ps
 ```
 
@@ -151,12 +156,11 @@ alembic upgrade head
 
 # Seeds de démo
 python scripts/seed.py              # utilisateurs
-python scripts/seed_referentiel.py  # 12 machines sur 3 sites
-python scripts/seed_events.py       # 14 jours d'événements
+python scripts/seed_referentiel.py  # sites, bâtiments, machines
+python scripts/seed_events.py       # événements de démo
 
 # Démarrer
 uvicorn app.main:app --reload --port 8000
-```
 
 ### 4. Frontend
 
@@ -202,14 +206,10 @@ Documentation Swagger : `http://localhost:8000/docs`
 ### Événements
 | Méthode | Route                                | Description                    |
 |---------|--------------------------------------|--------------------------------|
-| GET     | /machines/{id}/timeline              | Events + planned (14j)         |
+| GET     | /machines/{id}/timeline              | Timeline événements (14j)      |
 | GET     | /machines/{id}/events                | Historique événements          |
 | POST    | /machines/{id}/events                | Déclarer un événement          |
 | PUT     | /events/{id}                         | Modifier un événement          |
-| POST    | /events/{id}/interventions           | Saisir une intervention        |
-| GET     | /machines/{id}/planned-maintenance   | Liste maintenances planifiées  |
-| POST    | /machines/{id}/planned-maintenance   | Planifier une maintenance      |
-| DELETE  | /planned-maintenance/{id}            | Supprimer une maintenance      |
 
 ---
 
@@ -264,27 +264,62 @@ Seuils :
 ```
 
 Le calcul OEE est actuellement fait côté frontend (`lib/oee.ts`).
-La Phase 4 prévoit un endpoint `GET /machines/{id}/oee` côté backend.
+Le routeur OEE backend (`routers/oee.py`) est implémenté mais commenté dans `main.py` (phase 4).
 
 ---
 
 ## Simulateur de données
 
+Le simulateur génère des données réalistes pour tester l'application OEE.
+
 ```bash
 # Depuis oee-pro/
 
-# Générer 14 jours de données pour toutes les machines
+# Méthode simple (recommandée) - lance tout automatiquement
+./start_simulator.sh
+
+# Générer 30 jours de données
+./start_simulator.sh --days 30
+
+# Sauter les vérifications préalables (si vous savez que tout est OK)
+./start_simulator.sh --skip-checks
+
+# Méthode manuelle détaillée
+# 1. Générer les données (14 jours par défaut)
 python simulator/machine_simulator.py
 
-# Dry-run (vérifier sans envoyer)
+# 2. Générer pour une machine spécifique
+python simulator/machine_simulator.py --machine-id <uuid>
+
+# 3. Générer 30 jours
+python simulator/machine_simulator.py --days 30
+
+# 4. Vérifier sans envoyer (dry-run)
 python simulator/api_connector.py \
   --file ./simulator/data/simulation_$(date +%Y-%m-%d)_14j.json \
   --dry-run
 
-# Pousser vers l'API
+# 5. Pousser vers l'API
 python simulator/api_connector.py \
   --file ./simulator/data/simulation_$(date +%Y-%m-%d)_14j.json
 ```
+
+Voir `simulator/simulator_README.md` pour plus de détails sur les profils machine et le format JSON.
+
+## Ingestion de données
+
+Les fichiers de simulation sont générés dans `simulator/data/` par `simulator/machine_simulator.py`.
+L'usage actuel est :
+- générer un fichier JSON de simulation
+- envoyer ce fichier vers l'API avec `simulator/api_connector.py`
+
+Pour automatiser le calcul des données sans injection manuelle directe en base, l'application peut évoluer vers :
+- un endpoint d'ingestion backend (`POST /api/v1/import/events`)
+- un dossier d'arrivée dédié comme `data/incoming/`
+- un service d'archivage des fichiers traités dans `data/archive/`
+- une validation stricte du format JSON/CSV avant insertion
+
+Cela permettra de créer un vrai flux "fichier → ingestion → calcul OEE".
 
 ---
 
@@ -293,8 +328,8 @@ python simulator/api_connector.py \
 | Phase | Statut | Contenu |
 |-------|--------|---------|
 | 1 | ✅ Terminé | Socle FastAPI + JWT + PostgreSQL |
-| 2 | ✅ Terminé | Référentiel industriel (sites/bâtiments/ateliers/machines) |
-| 3 | ✅ Terminé | Événements machine + interventions + timeline frontend |
+| 2 | ✅ Terminé | Référentiel industriel (sites/bâtiments/machines) |
+| 3 | ✅ Terminé | Événements machine + timeline frontend |
 | 4 | 🔲 Prévu | Calcul OEE backend, endpoint `/machines/{id}/oee`, historique |
 | 5 | 🔲 Prévu | Audit trail, monitoring, sécurité prod |
 | 6 | 🔲 Prévu | Bridge MQTT → REST, intégrations OT/SI |
